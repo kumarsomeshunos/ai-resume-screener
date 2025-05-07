@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import styles from "./JobCard.module.css";
 import Link from "next/link";
 
@@ -30,10 +31,13 @@ export default function JobCard({
     <div className={cardClasses} style={cardStyle}>
       <div className={styles.overlay}>
         <div className={styles.header}>
-          <img
+          <Image
             src={companyLogo}
             alt={`${companyName} logo`}
             className={styles.logo}
+            width={50}
+            height={50}
+            unoptimized
           />
           <div>
             <h3 className={styles.jobTitle}>{jobTitle}</h3>
