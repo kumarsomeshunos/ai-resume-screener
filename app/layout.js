@@ -1,6 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/core/Navbar/Navbar";
+import { cookies } from "next/headers";
+import {jwtDecode} from "jwt-decode";
+import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,23 +21,29 @@ export const metadata = {
     "Streamline your hiring process with AI-powered resume screening for smarter and faster candidate selection.",
 };
 
-const navbarLinks = [
-  { key: "New Job", value: "/newjob" },
-  { key: "Recuriter Home", value: "/recruiterhome" },
-  { key: "User Home", value: "/userhome" },
-  { key: "Profile", value: "/profile" },
-  { key: "Sign Up", value: "/signup" },
-  { key: "Sign In", value: "/signin" },
-];
+export default async function RootLayout({ children }) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
+  let role = null;
 
-export default function RootLayout({ children }) {
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      role = decoded?.role || null;
+    } catch (e) {
+      console.error("Invalid token", e);
+    }
+  }
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar navbarLinks={navbarLinks} />
+        <AuthProvider>
+        <Navbar />
         {children}
+        </AuthProvider>
       </body>
     </html>
   );

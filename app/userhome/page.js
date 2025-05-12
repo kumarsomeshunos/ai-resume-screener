@@ -1,14 +1,29 @@
+// Server-side rendered page
 import Banner from "@/components/cards/Banner/Banner";
 import CardHolder from "@/components/cards/CardHolder/CardHolder";
 import SectionWrapper from "@/components/core/Wrapper/SectionWrapper";
 import Heading from "@/components/core/Heading/Heading";
 import { getAuthenticatedUser } from "@/lib/auth";
+import Navbar from "@/components/core/Navbar/Navbar";
 
 export default async function UserHome() {
   const user = await getAuthenticatedUser();
+  // Fetch match score recommendations server-side using user token and uid
+  if (user?.token && user?.uid) {
+    const res = await fetch(`http://localhost:8000/match-scores/recommendations/${user.uid}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${user.token}`,
+        "Accept": "application/json",
+      },
+    });
+    const matchScores = await res.json();
+    console.log("Match Score Recommendations:", matchScores);
+  }
   if (user.role == "candidate") {
     return (
       <SectionWrapper>
+        <Navbar />
         <Banner />
         <Heading
           heading={"AI Recommended Jobs"}
